@@ -8,7 +8,7 @@ project_root = Path(__file__).parent
 setup(
     name='plz',
     version='0.1',
-    description='Helpers for running native Python functions on the CLSP grid.',
+    description='Helpers for running native Python functions as qsub jobs on the CLSP grid.',
     author='Piotr Żelasko',
     author_email="pzelasko@jhu.edu",
     long_description=(project_root / 'README.md').read_text(),
