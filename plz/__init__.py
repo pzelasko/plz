@@ -1,1 +1,1 @@
-from .plz import run_jobs
+from .plz import run, map, setup_cluster

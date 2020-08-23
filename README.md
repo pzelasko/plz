@@ -16,7 +16,7 @@ CPU jobs:
         return x ** 2
         
     import plz
-    plz.run_jobs(task, range(1000), jobs=10)
+    plz.map(task, range(1000), jobs=10)
     
 GPU jobs:
 
@@ -25,7 +25,7 @@ GPU jobs:
         return torch.tensor([x] * 100, device='cuda').sum()
         
     import plz
-    plz.run_jobs(task, range(1000), jobs=1, gpus=1)
+    plz.map(task, range(1000), jobs=1, gpus=1)
     
 Using logs:
 
@@ -35,9 +35,17 @@ Using logs:
         return x ** 2
         
     import plz
-    plz.run_jobs(task, range(1000), jobs=10, log_dir='/path/to/logs')
+    plz.map(task, range(1000), jobs=10, log_dir='/path/to/logs')
+    
+Single task:
+
+    def task(x):
+        return x ** 2
+        
+    import plz
+    plz.run(task, 1)
    
 ## Technical details
 
-Under the hood, for each `run_jobs` call, it creates your own "mini-cluster" of Python worker "services" where the jobs are being distributed. 
+Under the hood, for each `run` or `map` call, it creates your own "mini-cluster" of Python worker "services" where the jobs are being distributed. 
 This cluster has its own scheduling, load balancing etc. It automatically shuts down as soon as all the inputs are processed.
