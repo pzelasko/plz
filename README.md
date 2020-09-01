@@ -10,7 +10,7 @@ No need to wrap python scripts into bash scripts anymore!
     
 ## Examples
 
-CPU jobs:
+### CPU jobs:
 
 ```python
 def task(x):
@@ -20,7 +20,7 @@ import plz
 plz.map(task, range(1000), jobs=10)
 ```
     
-GPU jobs:
+### GPU jobs:
 
 ```python
 def task(x):
@@ -30,8 +30,19 @@ def task(x):
 import plz
 plz.map(task, range(1000), jobs=1, gpus=1)
 ```
+
+
+### Iterate over multiple sequences:
+
+```python
+def task(x, y):
+    return (x + y) ** 2
     
-Using logs:
+import plz
+plz.map(task, range(1000), range(1000, 2000), jobs=10)
+```
+    
+### Using logs:
 
 ```python
 def task(x):
@@ -43,7 +54,7 @@ import plz
 plz.map(task, range(1000), jobs=10, log_dir='/path/to/logs')
 ```
     
-Single task:
+### Single task:
 
 ```python
 def task(x):

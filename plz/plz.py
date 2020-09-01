@@ -32,7 +32,7 @@ def run(
 
 def map(
         fn,
-        inputs,
+        *inputs,
         jobs=1,
         memory='2G',
         gpus=0,
@@ -55,7 +55,7 @@ def map(
     ) as cluster:
         with Client(cluster) as client:
             cluster.scale(jobs)
-            futures = client.map(fn, inputs)
+            futures = client.map(fn, *inputs)
             results = client.gather(futures)
     return results
 
