@@ -12,38 +12,46 @@ No need to wrap python scripts into bash scripts anymore!
 
 CPU jobs:
 
-    def task(x):
-        return x ** 2
-        
-    import plz
-    plz.map(task, range(1000), jobs=10)
+```python
+def task(x):
+    return x ** 2
+
+import plz
+plz.map(task, range(1000), jobs=10)
+```
     
 GPU jobs:
 
-    def task(x):
-        import torch
-        return torch.tensor([x] * 100, device='cuda').sum()
-        
-    import plz
-    plz.map(task, range(1000), jobs=1, gpus=1)
+```python
+def task(x):
+    import torch
+    return torch.tensor([x] * 100, device='cuda').sum()
+
+import plz
+plz.map(task, range(1000), jobs=1, gpus=1)
+```
     
 Using logs:
 
-    def task(x):
-        import logging
-        logging.info(f'Running job with input {x}')
-        return x ** 2
-        
-    import plz
-    plz.map(task, range(1000), jobs=10, log_dir='/path/to/logs')
+```python
+def task(x):
+    import logging
+    logging.info(f'Running job with input {x}')
+    return x ** 2
+
+import plz
+plz.map(task, range(1000), jobs=10, log_dir='/path/to/logs')
+```
     
 Single task:
 
-    def task(x):
-        return x ** 2
-        
-    import plz
-    plz.run(task, 1)
+```python
+def task(x):
+    return x ** 2
+
+import plz
+plz.run(task, 1)
+```
    
 ## Technical details
 
