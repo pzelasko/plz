@@ -69,6 +69,8 @@ def setup_cluster(
         cores_per_proc=1,
         env_extra=None,
         job_extra=None,
+        *args,
+        **kwargs
 ) -> SGECluster:
     queue = 'all.q'
     if env_extra is None:
@@ -94,7 +96,9 @@ def setup_cluster(
         memory=memory,
         cores=cores_per_proc,
         resource_spec=resource_spec,
-        log_directory=log_dir,
+        log_directory=log_dir if log_dir is not None else 'log',
         job_extra=job_extra,
-        env_extra=env_extra  # e.g. ['export ENV_VARIABLE="SOMETHING"', 'source myscript.sh']
+        env_extra=env_extra,  # e.g. ['export ENV_VARIABLE="SOMETHING"', 'source myscript.sh']
+        *args,
+        **kwargs,
     )
