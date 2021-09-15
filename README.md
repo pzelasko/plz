@@ -63,6 +63,11 @@ def task(x):
 import plz
 plz.run(task, 1)
 ```
+
+### Running on CLSP or COE grid
+
+By default, the `map` and `run` methods are configured to run on the CLSP grid. To run on the
+COE grid, additionally pass the argument `grid='coe'` to these methods.
    
 ## Technical details
 
