@@ -13,6 +13,8 @@ def run(
         cores_per_proc=1,
         env_extra=None,
         job_extra=None,
+        grid='clsp'
+
 ):
     with setup_cluster(
             memory=memory,
@@ -22,7 +24,8 @@ def run(
             proc_per_worker=proc_per_worker,
             cores_per_proc=cores_per_proc,
             env_extra=env_extra,
-            job_extra=job_extra
+            job_extra=job_extra,
+            grid=grid
     ) as cluster:
         with Client(cluster) as client:
             cluster.scale(1)
@@ -42,6 +45,7 @@ def map(
         cores_per_proc=1,
         env_extra=None,
         job_extra=None,
+        grid='clsp'
 ):
     with setup_cluster(
             memory=memory,
@@ -51,7 +55,8 @@ def map(
             proc_per_worker=proc_per_worker,
             cores_per_proc=cores_per_proc,
             env_extra=env_extra,
-            job_extra=job_extra
+            job_extra=job_extra,
+            grid=grid
     ) as cluster:
         with Client(cluster) as client:
             cluster.scale(jobs)
@@ -69,25 +74,41 @@ def setup_cluster(
         cores_per_proc=1,
         env_extra=None,
         job_extra=None,
+        grid='clsp',
         *args,
         **kwargs
 ) -> SGECluster:
-    queue = 'all.q'
     if env_extra is None:
         env_extra = []
     # We're creating the "qsub"-like resource specifiation here
     resource_spec = ''
-    # Add memory specification (CLSP grid specific)
-    qsub_mem_str = f'mem_free={memory},ram_free={memory}'.replace('GB', 'G')
+    queue = 'all.q'
+
+    if grid == 'clsp':
+        # Add memory specification (CLSP grid specific)
+        qsub_mem_str = f'mem_free={memory},ram_free={memory}'.replace('GB', 'G')
+        
+        # Handle GPU jobs
+        if gpus:
+            # Nun GPUs arg + limit hosts to c nodes (with PyTorch compatible GPUs)
+            resource_spec += f',gpu={gpus},hostname=c*'
+            # Set the queu as needed
+            queue = 'g.q'
+            # Check which GPU is free to use
+            env_extra.append(f'export CUDA_VISIBLE_DEVICES=$(free-gpu -n {gpus})')
+    
+    elif grid == 'coe':
+        # Add memory specification (CLSP grid specific)
+        qsub_mem_str = f'mem_free={memory}'.replace('GB', 'G')
+        
+        # Handle GPU jobs
+        if gpus:
+            # Nun GPUs arg + limit hosts to c nodes (with PyTorch compatible GPUs)
+            resource_spec += f',gpu={gpus}'
+            # Set the queu as needed
+            queue = 'gpu.q'
+    
     resource_spec += qsub_mem_str
-    # Handle GPU jobs
-    if gpus:
-        # Nun GPUs arg + limit hosts to c nodes (with PyTorch compatible GPUs)
-        resource_spec += f',gpu={gpus},hostname=c*'
-        # Set the queu as needed
-        queue = 'g.q'
-        # Check which GPU is free to use
-        env_extra.append(f'export CUDA_VISIBLE_DEVICES=$(free-gpu -n {gpus})')
     # Create a "mini cluster" that our jobs will get submitted to
     return SGECluster(
         queue=queue,
